@@ -7,42 +7,32 @@
  */
 package cl.ravenhill.kernet.functions
 
+import cl.ravenhill.kernet.minus
 import cl.ravenhill.kernet.tf
-import org.tensorflow.EagerSession
+import org.tensorflow.ConcreteFunction
+import org.tensorflow.Operand
 import org.tensorflow.Signature
 import org.tensorflow.Tensor
-import org.tensorflow.ndarray.IntNdArray
+import org.tensorflow.ndarray.NdArrays
 import org.tensorflow.ndarray.Shape
 import org.tensorflow.op.Ops
 import org.tensorflow.types.TFloat32
-import org.tensorflow.types.TInt32
 
-fun sigmoid(x: Tensor<TFloat32>): Tensor<TInt32> {
-  EagerSession.create().use {
-    val tf = Ops.create(it)
-
+fun sigmoid(x: Tensor<TFloat32>): Tensor<TFloat32> {
+  val signature = { ops: Ops ->
+    tf = ops
+    val placeholder = tf.placeholder(TFloat32.DTYPE)
+    val a = tf.math.exp(placeholder).plus(1F)
+//    val sig = tf.math.reciprocal(tf.math.exp(placeholder) + 1F)
+    Signature.builder().input("x", placeholder).output("sigmoid", sig).build()
   }
-  val one = TInt32.scalarOf(1)
-  return one
-}
-
-private fun sigmoidSignature(ops: Ops): Signature {
-  tf = ops
-  val x = tf.placeholder(TFloat32.DTYPE)
-  val sig = x + 1F
-  return Signature.builder().input("x", x).output("sigmoid", sig).build()
+  ConcreteFunction.create(signature).use { f ->
+    return f.call(x).expect(TFloat32.DTYPE)
+  }
 }
 
 fun main() {
-  // Allocate a tensor of 32-bits integer of the shape (2, 3, 2)
-  val tensor: Tensor<TInt32> = TInt32.tensorOf(Shape.of(2, 3, 2))
-
-// Access tensor memory directly
-  val tensorData: IntNdArray = tensor.data()
-
-  EagerSession.create().use { session ->
-    val tf = Ops.create(session)
-    val one = tf.constant(1)
-    one.data().scalars().forEach { println(it.getInt()) }
-  }
+  val t = TFloat32.tensorOf(NdArrays.ofFloats(Shape.scalar()))
+  t.data().setFloat(0F)
+  sigmoid(t).data().scalars().forEach { println(it.getFloat()) }
 }
