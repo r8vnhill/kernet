@@ -3,6 +3,7 @@ package cl.ravenhill.kernet.functions
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.RepeatedTest
+import org.tensorflow.Operand
 import org.tensorflow.ndarray.FloatNdArray
 import org.tensorflow.ndarray.Shape
 import org.tensorflow.op.Ops
@@ -28,7 +29,7 @@ internal class ActivationFunctionsTest {
 
   @RepeatedTest(16)
   fun `sigmoid function result is in range 0 to 1`() {
-    checkActivationFunction { _, it ->
+    checkActivationFunction (::sigmoid) { _, it ->
       assertTrue(
         it.getFloat() in 0.0..1.0,
         "Test failed with seed: $seed. ${it.getFloat()} is not in [0, 1]"
@@ -38,7 +39,7 @@ internal class ActivationFunctionsTest {
 
   @RepeatedTest(16)
   fun `sigmoid results matches function definition`() {
-    checkActivationFunction { x, it ->
+    checkActivationFunction (::sigmoid) { x, it ->
       val expected = 1 / (1 + exp(-x))
       assertTrue(
         abs(expected - it.getFloat()) < eps,
@@ -47,11 +48,21 @@ internal class ActivationFunctionsTest {
     }
   }
 
-  private fun checkActivationFunction(assertFor: (Float, FloatNdArray) -> Unit) {
+  @RepeatedTest(16)
+  fun `ReLU should be greater or equal to 0`() {
+    checkActivationFunction (::relu) { _, it ->
+      assertTrue(
+        it.getFloat() >= 0,
+        "Test failed with seed: $seed. ${it.getFloat()} is negative"
+      )
+    }
+  }
+
+  private fun checkActivationFunction(function: (Ops, Operand<TFloat32>) -> Operand<TFloat32>, assertFor: (Float, FloatNdArray) -> Unit) {
     val rng = Random(seed)
     val t = randomTensor(rng)
-    val sig = sigmoid(tf, t).asTensor()
-    sig.data().scalars().forEachIndexed { index, it -> assertFor(t.data().getFloat(*index), it) }
+    val result = function(tf, t)
+    result.data().scalars().forEachIndexed { index, it -> assertFor(t.data().getFloat(*index), it) }
   }
 
   private fun randomTensor(rng: Random): Constant<TFloat32> {
@@ -59,7 +70,7 @@ internal class ActivationFunctionsTest {
       rng.nextLong(1, 10)
     }
     val t = TFloat32.tensorOf(Shape.of(*shape))
-    t.data().scalars().forEach { scalar -> scalar.setFloat(rng.nextFloat() * 100) }
+    t.data().scalars().forEach { scalar -> scalar.setFloat(rng.nextFloat() * 100 - 50) }
     return tf.constant(t)
   }
 }
