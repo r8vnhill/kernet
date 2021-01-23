@@ -7,31 +7,26 @@
  */
 package cl.ravenhill.kernet.functions
 
-import cl.ravenhill.kernet.plus
-import cl.ravenhill.kernet.tf
-import org.tensorflow.ConcreteFunction
-import org.tensorflow.Signature
+import org.tensorflow.Operand
 import org.tensorflow.Tensor
-import org.tensorflow.ndarray.NdArrays
-import org.tensorflow.ndarray.Shape
 import org.tensorflow.op.Ops
+import org.tensorflow.op.math.Sigmoid
+import org.tensorflow.op.math.Tanh
+import org.tensorflow.op.nn.Relu
+import org.tensorflow.op.nn.Softmax
 import org.tensorflow.types.TFloat32
+import org.tensorflow.types.family.TNumber
+import org.tensorflow.types.family.TType
 
-fun sigmoid(x: Tensor<TFloat32>): Tensor<TFloat32> {
-  val signature = { ops: Ops ->
-    tf = ops
-    val m = tf.math
-    val placeholder = tf.placeholder(TFloat32.DTYPE)
-    val sig = tf.math.reciprocal(tf.math.exp(tf.math.neg(placeholder)) + 1)
-    Signature.builder().input("x", placeholder).output("sigmoid", sig).build()
-  }
-  ConcreteFunction.create(signature).use { f ->
-    return f.call(x).expect(TFloat32.DTYPE)
-  }
-}
+fun <T : TType> sigmoid(tf: Ops, features: Operand<T>): Sigmoid<T> = tf.math.sigmoid(features)
 
-fun main() {
-  val t = TFloat32.tensorOf(NdArrays.ofFloats(Shape.scalar()))
-  t.data().setFloat(0F)
-  sigmoid(t).data().scalars().forEach { println(it.getFloat()) }
-}
+fun <T : TType> relu(tf: Ops, features: Operand<T>): Relu<T> = tf.nn.relu(features)
+
+fun <T : TType> tanh(tf: Ops, features: Operand<T>): Tanh<T> = tf.math.tanh(features)
+
+fun <T : TNumber> softmax(tf: Ops, features: Operand<T>): Softmax<T> = tf.nn.softmax(features)
+
+fun <T : TType> swish(tf: Ops, features: Operand<T>, beta: Tensor<T>): Operand<T> =
+  tf.math.mul(features, tf.math.sigmoid(tf.math.mul(features, tf.constant(beta))))
+
+
