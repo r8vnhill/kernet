@@ -11,6 +11,7 @@ import org.tensorflow.op.core.Constant
 import org.tensorflow.types.TFloat32
 import kotlin.math.abs
 import kotlin.math.exp
+import kotlin.math.max
 import kotlin.random.Random
 
 /**
@@ -54,6 +55,17 @@ internal class ActivationFunctionsTest {
       assertTrue(
         it.getFloat() >= 0,
         "Test failed with seed: $seed. ${it.getFloat()} is negative"
+      )
+    }
+  }
+
+  @RepeatedTest(16)
+  fun `ReLU result matches function definition`() {
+    checkActivationFunction (::relu) { x, it ->
+      val expected = max(0F, x)
+      assertTrue(
+        abs(expected - it.getFloat()) < eps,
+        "Test failed with seed: $seed. Expected: $expected but got ${it.getFloat()}"
       )
     }
   }
