@@ -7,11 +7,9 @@
  */
 package cl.ravenhill.kernet.functions
 
-import cl.ravenhill.kernet.minus
 import cl.ravenhill.kernet.plus
 import cl.ravenhill.kernet.tf
 import org.tensorflow.ConcreteFunction
-import org.tensorflow.Operand
 import org.tensorflow.Signature
 import org.tensorflow.Tensor
 import org.tensorflow.ndarray.NdArrays
