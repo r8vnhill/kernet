@@ -8,6 +8,7 @@
 package cl.ravenhill.kernet.functions
 
 import cl.ravenhill.kernet.minus
+import cl.ravenhill.kernet.plus
 import cl.ravenhill.kernet.tf
 import org.tensorflow.ConcreteFunction
 import org.tensorflow.Operand
@@ -21,9 +22,9 @@ import org.tensorflow.types.TFloat32
 fun sigmoid(x: Tensor<TFloat32>): Tensor<TFloat32> {
   val signature = { ops: Ops ->
     tf = ops
+    val m = tf.math
     val placeholder = tf.placeholder(TFloat32.DTYPE)
-    val a = tf.math.exp(placeholder).plus(1F)
-//    val sig = tf.math.reciprocal(tf.math.exp(placeholder) + 1F)
+    val sig = tf.math.reciprocal(tf.math.exp(tf.math.neg(placeholder)) + 1)
     Signature.builder().input("x", placeholder).output("sigmoid", sig).build()
   }
   ConcreteFunction.create(signature).use { f ->

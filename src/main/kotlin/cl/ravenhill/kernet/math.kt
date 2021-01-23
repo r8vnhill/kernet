@@ -14,12 +14,11 @@ import org.tensorflow.types.family.TType
 
 lateinit var tf: Ops
 
-operator fun Operand<TFloat32>.plus(scalar: Float): Operand<TFloat32> = this + tf.constant(scalar)
+operator fun Operand<TFloat32>.plus(scalar: Float) = this + tf.constant(scalar)
+
+
+operator fun Operand<TFloat32>.plus(scalar: Int) = this + scalar.toFloat()
 
 operator fun <T : TType?> Operand<T>.plus(op: Operand<T>): Operand<T> = tf.math.add(this, op)
 
 operator fun Operand<TFloat32>.minus(scalar: Int) = this.plus(-scalar.toFloat())
-
-operator fun Int.minus(x: Operand<TFloat32>): Operand<TFloat32> {
-  TODO("Not yet implemented")
-}

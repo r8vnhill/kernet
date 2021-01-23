@@ -26,7 +26,7 @@ internal class ActivationKtTest {
       val t = TFloat32.tensorOf(Shape.of(rng.nextLong(10), rng.nextLong(10), rng.nextLong(10)))
       t.data().scalars().forEach { scalar -> scalar.setFloat(rng.nextFloat() * 100) }
       val sig = sigmoid(t)
-      sig.data().scalars().forEach { assertTrue(it.getFloat() >= 0 && it.getFloat() < 1, "Test failed with seed: $seed. ${it.getFloat()} is not in [0, 1]") }
+      sig.data().scalars().forEach { assertTrue(it.getFloat() in 0.0..1.0, "Test failed with seed: $seed. ${it.getFloat()} is not in [0, 1]") }
     }
   }
 }
