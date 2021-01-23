@@ -15,6 +15,7 @@ dependencies {
   implementation(group="org.tensorflow", name="tensorflow-core-platform", version="0.2.0")
   implementation("org.jetbrains.kotlin-deeplearning:api:0.1.0")
   implementation("org.junit.jupiter:junit-jupiter:5.4.2")
+  testImplementation("org.junit.jupiter:junit-jupiter:5.4.2")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>() {
