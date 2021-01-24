@@ -58,6 +58,16 @@ internal class ActivationFunctionsTest {
       )
     }
   }
+
+  @RepeatedTest(16)
+  fun `softmax function result is in range 0 to 1`() {
+    checkActivationFunction(::softmax) { _, it ->
+      assertTrue(
+        it.getFloat() in 0.0..1.0,
+        "Test failed with seed: $seed. ${it.getFloat()} is not in [0, 1]"
+      )
+    }
+  }
   // endregion
 
   // region : computations
