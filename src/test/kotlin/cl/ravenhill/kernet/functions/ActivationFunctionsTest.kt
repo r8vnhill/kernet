@@ -40,35 +40,38 @@ internal class ActivationFunctionsTest {
     }
   }
 
-//  @RepeatedTest(16)
-//  fun `ReLU should be greater or equal to 0`() {
-//    checkActivationFunction(::relu) { _, it ->
-//      assertTrue(
-//        it.getFloat() >= 0,
-//        "Test failed with seed: $seed. ${it.getFloat()} is negative"
-//      )
-//    }
-//  }
+  @RepeatedTest(16)
+  fun `ReLU should be greater or equal to 0`() {
+    val relu = KReLU<TFloat32>(tf)
+    checkActivationFunction(relu) { _, it ->
+      assertTrue(
+        it.getFloat() >= 0,
+        "Test failed with seed: $seed. ${it.getFloat()} is negative"
+      )
+    }
+  }
 
-//  @RepeatedTest(16)
-//  fun `tanh function result is in range -1 to 1`() {
-//    checkActivationFunction(::tanh) { _, it ->
-//      assertTrue(
-//        it.getFloat() in -1.0..1.0,
-//        "Test failed with seed: $seed. ${it.getFloat()} is not in [-1, 1]"
-//      )
-//    }
-//  }
+  @RepeatedTest(16)
+  fun `tanh function result is in range -1 to 1`() {
+    val tanh = KTanh<TFloat32>(tf)
+    checkActivationFunction(tanh) { _, it ->
+      assertTrue(
+        it.getFloat() in -1.0..1.0,
+        "Test failed with seed: $seed. ${it.getFloat()} is not in [-1, 1]"
+      )
+    }
+  }
 
-//  @RepeatedTest(16)
-//  fun `softmax function result is in range 0 to 1`() {
-//    checkActivationFunction(::softmax) { _, it ->
-//      assertTrue(
-//        it.getFloat() in 0.0..1.0,
-//        "Test failed with seed: $seed. ${it.getFloat()} is not in [0, 1]"
-//      )
-//    }
-//  }
+  @RepeatedTest(16)
+  fun `softmax function result is in range 0 to 1`() {
+    val softmax = KSoftmax<TFloat32>(tf)
+    checkActivationFunction(softmax) { _, it ->
+      assertTrue(
+        it.getFloat() in 0.0..1.0,
+        "Test failed with seed: $seed. ${it.getFloat()} is not in [0, 1]"
+      )
+    }
+  }
   // endregion
 
   // region : computations
@@ -84,27 +87,29 @@ internal class ActivationFunctionsTest {
     }
   }
 
-//  @RepeatedTest(16)
-//  fun `ReLU result matches function definition`() {
-//    checkActivationFunction(::relu) { x, it ->
-//      val expected = max(0F, x)
-//      assertTrue(
-//        abs(expected - it.getFloat()) < eps,
-//        "Test failed with seed: $seed. Expected: $expected but got ${it.getFloat()}"
-//      )
-//    }
-//  }
+  @RepeatedTest(16)
+  fun `ReLU result matches function definition`() {
+    val relu = KReLU<TFloat32>(tf)
+    checkActivationFunction(relu) { x, it ->
+      val expected = max(0F, x)
+      assertTrue(
+        abs(expected - it.getFloat()) < eps,
+        "Test failed with seed: $seed. Expected: $expected but got ${it.getFloat()}"
+      )
+    }
+  }
 //
-//  @RepeatedTest(16)
-//  fun `tanh result matches function definition`() {
-//    checkActivationFunction(::tanh) { x, it ->
-//      val expected = kotlin.math.tanh(x)
-//      assertTrue(
-//        abs(expected - it.getFloat()) < eps,
-//        "Test failed with seed: $seed. Expected: $expected but got ${it.getFloat()}"
-//      )
-//    }
-//  }
+  @RepeatedTest(16)
+  fun `tanh result matches function definition`() {
+  val tanh = KTanh<TFloat32>(tf)
+  checkActivationFunction(tanh) { x, it ->
+      val expected = kotlin.math.tanh(x)
+      assertTrue(
+        abs(expected - it.getFloat()) < eps,
+        "Test failed with seed: $seed. Expected: $expected but got ${it.getFloat()}"
+      )
+    }
+  }
 
   @RepeatedTest(16)
   fun `swish result matches function definition`() {
