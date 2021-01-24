@@ -19,7 +19,68 @@ import org.tensorflow.op.nn.Softmax
 import org.tensorflow.types.family.TNumber
 import org.tensorflow.types.family.TType
 
-fun <T : TType> sigmoid(tf: Ops, features: Operand<T>): Sigmoid<T> = tf.math.sigmoid(features)
+/**
+ * Interface for all activation functions.
+ *
+ * Every class implementing this interface must provide a method to set the _features_ to compute
+ * the function, and a method to execute (*call*) the computation.
+ *
+ * @param T
+ *    the type of data used by the operation
+ * @author Ignacio Slater Muñoz
+ */
+interface IActivationFunction<T : TType> {
+  /**
+   * Calculates the value of the activation function and returns the corresponding operand.
+   *
+   * @see [Operand]
+   */
+  fun call(): Operand<T>
+
+  /**
+   * Calculates the value of the activation function for a given set of input features and returns
+   * the corresponding operand.
+   *
+   * @see [Operand]
+   */
+  operator fun invoke(x: Operand<T>): Operand<T>
+
+  /**
+   * Set the inputs for the activation function.
+   * This method returns the activation function to provide a fluid interface.
+   */
+  fun setFeatures(x: Operand<T>): IActivationFunction<T>
+}
+
+abstract class AbstractActivationFunction<T : TType>(protected val tf: Ops) :
+  IActivationFunction<T> {
+  lateinit var features: Operand<T>
+    protected set
+}
+
+/**
+ * Wrapper class for the Sigmoid activation function.
+ * @param T
+ *    the type of data used by the operation
+ * @property tf
+ *    the context for the operations
+ * @see [Ops]
+ */
+class KSigmoid<T : TType>(tf: Ops) : AbstractActivationFunction<T>(tf) {
+  override fun setFeatures(x: Operand<T>): KSigmoid<T> {
+    features = x
+    return this
+  }
+
+  override fun call(): Sigmoid<T> = tf.math.sigmoid(features)
+
+  override operator fun invoke(x: Operand<T>): Sigmoid<T> {
+    setFeatures(x)
+    return call()
+  }
+}
+
+fun <T : TType> sigmoid(tf: Ops, features: Operand<T>) = KSigmoid<T>(tf).invoke(features)
 
 fun <T : TType> relu(tf: Ops, features: Operand<T>): Relu<T> = tf.nn.relu(features)
 
