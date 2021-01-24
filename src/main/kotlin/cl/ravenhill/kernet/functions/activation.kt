@@ -27,5 +27,3 @@ fun <T : TNumber> softmax(tf: Ops, features: Operand<T>): Softmax<T> = tf.nn.sof
 
 fun <T : TType> swish(tf: Ops, features: Operand<T>, beta: Tensor<T>): Operand<T> =
   tf.math.mul(features, tf.math.sigmoid(tf.math.mul(features, tf.constant(beta))))
-
-
