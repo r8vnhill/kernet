@@ -8,13 +8,13 @@
 package cl.ravenhill.kernet.math
 
 import cl.ravenhill.kernet.math.OperatorContext.math
+import cl.ravenhill.kernet.math.OperatorContext.tf
 import org.tensorflow.Operand
-import org.tensorflow.Tensor
 import org.tensorflow.op.MathOps
 import org.tensorflow.op.Ops
 import org.tensorflow.op.math.Mul
+import org.tensorflow.types.TFloat32
 import org.tensorflow.types.family.TType
-import cl.ravenhill.kernet.math.OperatorContext as tf
 
 /**
  * Object re´resenting the environment where the operations are being executed.
@@ -23,6 +23,8 @@ import cl.ravenhill.kernet.math.OperatorContext as tf
  *    the ``MathOps`` environment where the operations are executed.
  */
 object OperatorContext {
+  lateinit var tf: Ops
+    private set
   lateinit var math: MathOps
     private set
 
@@ -33,6 +35,7 @@ object OperatorContext {
    * @see [MathOps]
    */
   fun setOperatorContext(tf: Ops) {
+    this.tf = tf
     math = tf.math
   }
 }
@@ -42,16 +45,4 @@ object OperatorContext {
  * @see [Mul]
  * @see [Operand]
  */
-operator fun <T : TType> Operand<T>.times(x: Operand<T>): Mul<T> = tf.math.mul(this, x)
-
-/**
- * Multiplies an operand by a tensor and returns the result wrapped on a ``Mul`` operand.
- *
- * @see [TType]
- * @see [Operand]
- * @see [Tensor]
- * @see [Mul]
- */
-operator fun <T : TType> Operand<T>.times(x: Tensor<T>): Mul<T> {
-  TODO("Not yet implemented")
-}
+operator fun Operand<TFloat32>.times(x: Float): Mul<TFloat32> = math.mul(this, tf.constant(x))

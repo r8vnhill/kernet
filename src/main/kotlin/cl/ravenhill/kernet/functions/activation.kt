@@ -10,12 +10,13 @@ package cl.ravenhill.kernet.functions
 import cl.ravenhill.kernet.math.OperatorContext
 import cl.ravenhill.kernet.math.times
 import org.tensorflow.Operand
-import org.tensorflow.Tensor
 import org.tensorflow.op.Ops
+import org.tensorflow.op.math.Mul
 import org.tensorflow.op.math.Sigmoid
 import org.tensorflow.op.math.Tanh
 import org.tensorflow.op.nn.Relu
 import org.tensorflow.op.nn.Softmax
+import org.tensorflow.types.TFloat32
 import org.tensorflow.types.family.TNumber
 import org.tensorflow.types.family.TType
 
@@ -152,6 +153,32 @@ class KSoftmax<T : TNumber>(tf: Ops) : AbstractActivationFunction<T>(tf) {
   }
 }
 
+/**
+ * Wrapper class for the Swish activation function.
+ *
+ * @property tf
+ *    the context for the operations
+ * @see [Ops], [Softmax]
+ */
+class KSwish(tf: Ops, var beta: Float = 1F) : AbstractActivationFunction<TFloat32>(tf) {
+
+  override fun call(): Mul<TFloat32> {
+    OperatorContext.setOperatorContext(tf)
+    return tf.math.mul(features, sigmoid(tf, features.times(beta)))
+  }
+
+  override fun invoke(x: Operand<TFloat32>): Mul<TFloat32> {
+    setFeatures(x)
+    return call()
+  }
+
+  override fun setFeatures(x: Operand<TFloat32>): KSwish {
+    features = x
+    return this
+  }
+}
+
+// region : activation functions
 fun <T : TType> sigmoid(tf: Ops, features: Operand<T>) = KSigmoid<T>(tf).invoke(features)
 
 fun <T : TType> relu(tf: Ops, features: Operand<T>) = KReLU<T>(tf).invoke(features)
@@ -160,9 +187,6 @@ fun <T : TType> tanh(tf: Ops, features: Operand<T>) = KTanh<T>(tf).invoke(featur
 
 fun <T : TNumber> softmax(tf: Ops, features: Operand<T>) = KSoftmax<T>(tf).invoke(features)
 
-fun <T : TType> swish(tf: Ops, features: Operand<T>, beta: Tensor<T>): Operand<T> {
-  OperatorContext.setOperatorContext(tf)
-  return tf.math.mul(features, sigmoid(tf, features * beta))
-}
-
-
+fun swish(tf: Ops, features: Operand<TFloat32>, beta: Float = 1F) =
+  KSwish(tf, beta).invoke(features)
+// endregion
