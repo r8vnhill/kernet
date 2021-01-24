@@ -7,6 +7,8 @@
  */
 package cl.ravenhill.kernet.functions
 
+import cl.ravenhill.kernet.math.OperatorContext
+import cl.ravenhill.kernet.math.times
 import org.tensorflow.Operand
 import org.tensorflow.Tensor
 import org.tensorflow.op.Ops
@@ -25,5 +27,9 @@ fun <T : TType> tanh(tf: Ops, features: Operand<T>): Tanh<T> = tf.math.tanh(feat
 
 fun <T : TNumber> softmax(tf: Ops, features: Operand<T>): Softmax<T> = tf.nn.softmax(features)
 
-fun <T : TType> swish(tf: Ops, features: Operand<T>, beta: Tensor<T>): Operand<T> =
-  tf.math.mul(features, tf.math.sigmoid(tf.math.mul(features, tf.constant(beta))))
+fun <T : TType> swish(tf: Ops, features: Operand<T>, beta: Tensor<T>): Operand<T> {
+  OperatorContext.setOperatorContext(tf)
+  return tf.math.mul(features, sigmoid(tf, features * beta))
+}
+
+
