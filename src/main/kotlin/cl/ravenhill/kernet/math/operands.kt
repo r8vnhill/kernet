@@ -14,7 +14,6 @@ import org.tensorflow.op.MathOps
 import org.tensorflow.op.Ops
 import org.tensorflow.op.math.Mul
 import org.tensorflow.types.TFloat32
-import org.tensorflow.types.family.TType
 
 /**
  * Object re´resenting the environment where the operations are being executed.
@@ -40,9 +39,10 @@ object OperatorContext {
   }
 }
 
+
 /**
- * Multiplies two ``Operand`` objects and returns the result wrapped in a ``Mul`` operand.
+ * Multiplies a float by a  and returns the result wrapped in a ``Mul`` operand.
  * @see [Mul]
  * @see [Operand]
  */
-operator fun Operand<TFloat32>.times(x: Float): Mul<TFloat32> = math.mul(this, tf.constant(x))
+operator fun Float.times(x: Operand<TFloat32>): Mul<TFloat32> = math.mul(tf.constant(this), x)

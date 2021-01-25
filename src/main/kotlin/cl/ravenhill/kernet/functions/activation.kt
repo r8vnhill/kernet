@@ -164,7 +164,8 @@ class KSwish(tf: Ops, var beta: Float = 1F) : AbstractActivationFunction<TFloat3
 
   override fun call(): Mul<TFloat32> {
     OperatorContext.setOperatorContext(tf)
-    return tf.math.mul(features, sigmoid(tf, features.times(beta)))
+    val bFeatures = beta * features
+    return tf.math.mul(features, sigmoid(tf, bFeatures))
   }
 
   override fun invoke(x: Operand<TFloat32>): Mul<TFloat32> {

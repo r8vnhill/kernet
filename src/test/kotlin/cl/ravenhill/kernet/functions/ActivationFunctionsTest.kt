@@ -18,14 +18,16 @@ import kotlin.random.Random
  * @author [Ignacio Slater Muñoz](mailto:ignacio.slater@ug.uchile.cl)
  */
 internal class ActivationFunctionsTest {
-  private lateinit var tf: Ops
-  private var seed = 0
   private val eps = 1e-3
+  private var seed = 0
+  private lateinit var rng: Random
+  private lateinit var tf: Ops
 
   @BeforeEach
   fun setUp() {
     tf = Ops.create()
     seed = Random.nextInt()
+    rng = Random(seed)
   }
 
   // region : invariants
@@ -113,13 +115,15 @@ internal class ActivationFunctionsTest {
 
   @RepeatedTest(16)
   fun `swish result matches function definition`() {
-//    checkActivationFunction(::swish) { x, it ->
-//      val expected = kotlin.math.tanh(x)
-//      assertTrue(
-//        abs(expected - it.getFloat()) < eps,
-//        "Test failed with seed: $seed. Expected: $expected but got ${it.getFloat()}"
-//      )
-//    }
+    val beta = rng.nextFloat() * 100 - 50
+    val swish = KSwish(tf, beta)
+    checkActivationFunction(swish) { x, it ->
+      val expected = x / (1 + exp(beta * x))
+      assertTrue(
+        abs(expected - it.getFloat()) < eps,
+        "Test failed with seed: $seed. Expected: $expected but got ${it.getFloat()}"
+      )
+    }
   }
   // endregion
 
@@ -127,9 +131,9 @@ internal class ActivationFunctionsTest {
     function: IActivationFunction<TFloat32>,
     assertFor: (Float, FloatNdArray) -> Unit
   ) {
-    val rng = Random(seed)
     val t = randomTensor(rng)
     val result = function(t)
+    // FIXME: Esta wea no funciona, `it` entrega pura mierda
     result.data().scalars().forEachIndexed { index, it -> assertFor(t.data().getFloat(*index), it) }
   }
 
