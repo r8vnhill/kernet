@@ -3,6 +3,7 @@ package cl.ravenhill.kernet.functions
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.RepeatedTest
+import org.junit.jupiter.api.Test
 import org.tensorflow.Operand
 import org.tensorflow.ndarray.FloatNdArray
 import org.tensorflow.ndarray.Shape
@@ -113,36 +114,29 @@ internal class ActivationFunctionsTest {
     }
   }
 
-  @RepeatedTest(16)
+  @Test
   fun `swish result matches function definition`() {
-    val beta = rng.nextFloat() * 100 - 50
-    val swish = KSwish(tf, beta)
-    checkActivationFunction(swish) { x, it ->
-      val expected = x / (1 + exp(beta * x))
-      assertTrue(
-        abs(expected - it.getFloat()) < eps,
-        "Test failed with seed: $seed. Expected: $expected but got ${it.getFloat()}"
-      )
-    }
+    TODO("")
   }
   // endregion
 
   private fun checkActivationFunction(
     function: IActivationFunction<TFloat32>,
+    lo: Int = 0,
+    hi: Int = 1,
     assertFor: (Float, FloatNdArray) -> Unit
   ) {
     val t = randomTensor(rng)
     val result = function(t)
-    // FIXME: Esta wea no funciona, `it` entrega pura mierda
     result.data().scalars().forEachIndexed { index, it -> assertFor(t.data().getFloat(*index), it) }
   }
 
-  private fun randomTensor(rng: Random): Constant<TFloat32> {
+  private fun randomTensor(rng: Random, lo: Int = 0, hi: Int = 100): Constant<TFloat32> {
     val shape = LongArray(rng.nextInt(4) + 1) {
       rng.nextLong(1, 10)
     }
     val t = TFloat32.tensorOf(Shape.of(*shape))
-    t.data().scalars().forEach { scalar -> scalar.setFloat(rng.nextFloat() * 100 - 50) }
+    t.data().scalars().forEach { scalar -> scalar.setFloat(hi * (rng.nextFloat() - 1/2) + lo) }
     return tf.constant(t)
   }
 }
