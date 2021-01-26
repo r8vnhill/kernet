@@ -1,10 +1,13 @@
 package cl.ravenhill.kernet.functions
 
+import cl.ravenhill.kernet.functions.activation.KReLU
+import cl.ravenhill.kernet.functions.activation.KSigmoid
+import cl.ravenhill.kernet.functions.activation.KSoftmax
+import cl.ravenhill.kernet.functions.activation.KTanh
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.RepeatedTest
 import org.junit.jupiter.api.Test
-import org.tensorflow.Operand
 import org.tensorflow.ndarray.FloatNdArray
 import org.tensorflow.ndarray.Shape
 import org.tensorflow.op.Ops
