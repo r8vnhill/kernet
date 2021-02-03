@@ -7,13 +7,14 @@
  */
 package cl.ravenhill.kernet.math
 
-import cl.ravenhill.kernet.math.OperatorContext.math
-import cl.ravenhill.kernet.math.OperatorContext.tf
+import cl.ravenhill.kernet.math.OperationsContext.math
+import cl.ravenhill.kernet.math.OperationsContext.tf
 import org.tensorflow.Operand
 import org.tensorflow.op.MathOps
 import org.tensorflow.op.Ops
-import org.tensorflow.op.math.Mul
+import org.tensorflow.op.math.*
 import org.tensorflow.types.TFloat32
+import org.tensorflow.types.family.TNumber
 import org.tensorflow.types.family.TType
 
 /**
@@ -22,7 +23,7 @@ import org.tensorflow.types.family.TType
  * @property math
  *    the ``MathOps`` environment where the operations are executed.
  */
-object OperatorContext {
+object OperationsContext {
   lateinit var tf: Ops
     private set
   lateinit var math: MathOps
@@ -40,6 +41,7 @@ object OperatorContext {
   }
 }
 
+operator fun <T : TType> Operand<T>.plus(x: Operand<T>): Add<T> = math.add(this, x)
 
 /**
  * Multiplies a float by a  and returns the result wrapped in a ``Mul`` operand.
@@ -48,5 +50,31 @@ object OperatorContext {
  */
 operator fun Float.times(x: Operand<TFloat32>): Mul<TFloat32> = math.mul(tf.constant(this), x)
 
+operator fun <T : TType> Operand<T>.times(x: Operand<T>): Mul<T> = math.mul(this, x)
 
-operator fun <T: TType> Operand<T>.times(x: Operand<T>): Mul<T> = math.mul(this, x)
+/**
+ * Element-wise maximum between two numerical operands.
+ *
+ * @see [Maximum]
+ * @see [Operand]
+ * @see [TNumber]
+ */
+fun <T : TNumber> max(a: Operand<T>, b: Operand<T>): Maximum<T> = math.maximum(a, b)
+
+/**
+ * Element-wise minimum between two numerical operands.
+ *
+ * @see [Minimum]
+ * @see [Operand]
+ * @see [TNumber]
+ */
+fun <T : TNumber> min(a: Operand<T>, b: Operand<T>): Minimum<T> = math.minimum(a, b)
+
+/**
+ * Returns the result of applying the exponential function element-wise to an operand.
+ *
+ * @see [Exp]
+ * @see [TNumber]
+ * @see [Operand]
+ */
+fun <T: TNumber> exp(x: Operand<T>): Exp<T> = math.exp(x)

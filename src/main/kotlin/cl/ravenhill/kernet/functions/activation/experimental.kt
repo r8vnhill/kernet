@@ -9,14 +9,14 @@
 
 package cl.ravenhill.kernet.functions.activation
 
-import cl.ravenhill.kernet.math.OperatorContext
+import cl.ravenhill.kernet.math.OperationsContext
+import cl.ravenhill.kernet.math.max
 import cl.ravenhill.kernet.math.times
+import cl.ravenhill.kernet.math.exp
+import cl.ravenhill.kernet.math.min
 import org.tensorflow.Operand
 import org.tensorflow.op.Ops
-import org.tensorflow.op.core.Max
-import org.tensorflow.op.math.Maximum
 import org.tensorflow.op.math.Mul
-import org.tensorflow.op.nn.Softmax
 import org.tensorflow.types.TFloat32
 
 /**
@@ -24,12 +24,12 @@ import org.tensorflow.types.TFloat32
  *
  * @property tf
  *    the context for the operations
- * @see [Ops], [Softmax]
+ * @see [Ops]
  */
 class KSwish(tf: Ops, var beta: Float = 1F) : AbstractActivationFunction<TFloat32>(tf) {
 
   override fun call(): Mul<TFloat32> {
-    OperatorContext.setOperatorContext(tf)
+    OperationsContext.setOperatorContext(tf)
     return features * sigmoid(tf, beta * features)
   }
 
@@ -45,30 +45,32 @@ class KSwish(tf: Ops, var beta: Float = 1F) : AbstractActivationFunction<TFloat3
 }
 
 /**
- * Wrapper class for the Swish activation function.
+ * Wrapper class for the CELU activation function.
  *
  * @property tf
  *    the context for the operations
- * @see [Ops], [Softmax]
+ * @see [Ops]
  */
 class KCELU(tf: Ops) : AbstractActivationFunction<TFloat32>(tf) {
   private var alpha = 1F
 
-  override fun call(): Maximum<TFloat32> {
-    OperatorContext.setOperatorContext(tf)
-    TODO("Finish implementation of this method [SL8]")
-    return tf.math.maximum(tf.constant(0F), features)
+  override fun call(): Operand<TFloat32> {
+    OperationsContext.setOperatorContext(tf)
+    val zeros = tf.zerosLike(features)
+    return max(zeros, features) + min(zeros, alpha * exp(features / alpha) - tf.onesLike(features))
   }
 
   override fun invoke(x: Operand<TFloat32>): Mul<TFloat32> {
-    return setFeatures(x).call()
+    TODO()
+//    return setFeatures(x).call()
   }
 
   fun invoke(x: Operand<TFloat32>, alpha: Float): Mul<TFloat32> {
-    return setFeatures(x).let {
-      this.alpha = alpha
-      this
-    }.call()
+    TODO()
+//    return setFeatures(x).let {
+//      this.alpha = alpha
+//      this
+//    }.call()
   }
 
   override fun setFeatures(x: Operand<TFloat32>): KCELU {
