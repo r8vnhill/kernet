@@ -36,28 +36,6 @@ internal class ActivationFunctionsTest {
 
   // region : invariants
   @RepeatedTest(16)
-  fun `sigmoid function result is in range 0 to 1`() {
-    val sigmoid = KSigmoid<TFloat32>(tf)
-    checkActivationFunction(sigmoid) { _, it ->
-      assertTrue(
-        it.getFloat() in 0.0..1.0,
-        "Test failed with seed: $seed. ${it.getFloat()} is not in [0, 1]"
-      )
-    }
-  }
-
-  @RepeatedTest(16)
-  fun `ReLU should be greater or equal to 0`() {
-    val relu = KReLU<TFloat32>(tf)
-    checkActivationFunction(relu) { _, it ->
-      assertTrue(
-        it.getFloat() >= 0,
-        "Test failed with seed: $seed. ${it.getFloat()} is negative"
-      )
-    }
-  }
-
-  @RepeatedTest(16)
   fun `tanh function result is in range -1 to 1`() {
     val tanh = KTanh<TFloat32>(tf)
     checkActivationFunction(tanh) { _, it ->
@@ -104,11 +82,11 @@ internal class ActivationFunctionsTest {
       )
     }
   }
-//
+  //
   @RepeatedTest(16)
   fun `tanh result matches function definition`() {
-  val tanh = KTanh<TFloat32>(tf)
-  checkActivationFunction(tanh) { x, it ->
+    val tanh = KTanh<TFloat32>(tf)
+    checkActivationFunction(tanh) { x, it ->
       val expected = kotlin.math.tanh(x)
       assertTrue(
         abs(expected - it.getFloat()) < eps,

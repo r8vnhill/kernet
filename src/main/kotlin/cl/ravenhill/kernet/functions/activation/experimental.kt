@@ -9,14 +9,14 @@
 
 package cl.ravenhill.kernet.functions.activation
 
-import cl.ravenhill.kernet.math.OperationsContext
-import cl.ravenhill.kernet.math.exp
-import cl.ravenhill.kernet.math.max
-import cl.ravenhill.kernet.math.min
+import cl.ravenhill.kernet.math.OperatorContext
 import cl.ravenhill.kernet.math.times
 import org.tensorflow.Operand
 import org.tensorflow.op.Ops
+import org.tensorflow.op.core.Max
+import org.tensorflow.op.math.Maximum
 import org.tensorflow.op.math.Mul
+import org.tensorflow.op.nn.Softmax
 import org.tensorflow.types.TFloat32
 
 /**
@@ -25,11 +25,12 @@ import org.tensorflow.types.TFloat32
  * @property tf
  *    the context for the operations
  * @see [Ops]
+ * @see [Ops], [Softmax]
  */
 class KSwish(tf: Ops, var beta: Float = 1F) : AbstractActivationFunction<TFloat32>(tf) {
 
   override fun call(): Mul<TFloat32> {
-    OperationsContext.setOperatorContext(tf)
+    OperatorContext.setOperatorContext(tf)
     return features * sigmoid(tf, beta * features)
   }
 

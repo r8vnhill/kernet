@@ -1,23 +1,34 @@
+@file:Suppress("PropertyName", "SpellCheckingInspection")
+
+val tensorflowVersion: String by project
+
 plugins {
   kotlin("jvm") version "1.4.21"
 }
 
 group = "cl.ravenhill"
-version = "1.0-SNAPSHOT"
+version = "0.0.4"
 
 repositories {
-  mavenCentral()
   jcenter()
-  maven(url = "https://kotlin.bintray.com/kotlin-datascience")
+  mavenCentral()
 }
 
 dependencies {
-  implementation(group="org.tensorflow", name="tensorflow-core-platform", version="0.2.0")
-  implementation("org.jetbrains.kotlin-deeplearning:api:0.1.0")
+  implementation(kotlin("stdlib"))
+  implementation(
+    group = "org.tensorflow",
+    name = "tensorflow-core-platform",
+    version = tensorflowVersion
+  )
   implementation("org.junit.jupiter:junit-jupiter:5.4.2")
   testImplementation("org.junit.jupiter:junit-jupiter:5.4.2")
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>() {
+tasks.test {
+  useJUnitPlatform()
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
   kotlinOptions.jvmTarget = "13"
 }

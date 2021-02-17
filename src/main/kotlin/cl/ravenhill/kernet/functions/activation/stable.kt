@@ -7,6 +7,7 @@
  */
 package cl.ravenhill.kernet.functions.activation
 
+import cl.ravenhill.kernet.math.minus
 import org.tensorflow.Operand
 import org.tensorflow.op.Ops
 import org.tensorflow.op.math.Sigmoid
@@ -39,6 +40,10 @@ class KSigmoid<T : TType>(tf: Ops) : AbstractActivationFunction<T>(tf) {
     setFeatures(x)
     return call()
   }
+
+  override fun derivative(): Operand<T> {
+    TODO("Not yet implemented")
+  }
 }
 
 /**
@@ -63,6 +68,10 @@ class KReLU<T : TType>(tf: Ops) : AbstractActivationFunction<T>(tf) {
     features = x
     return this
   }
+
+  override fun derivative(): Operand<T> {
+    TODO("Not yet implemented")
+  }
 }
 
 /**
@@ -86,6 +95,8 @@ class KTanh<T : TType>(tf: Ops) : AbstractActivationFunction<T>(tf) {
     features = x
     return this
   }
+
+  override fun derivative(): Operand<T> = tf.onesLike(features) - tf.math.square(invoke(features))
 }
 
 /**
@@ -108,6 +119,10 @@ class KSoftmax<T : TNumber>(tf: Ops) : AbstractActivationFunction<T>(tf) {
   override fun setFeatures(x: Operand<T>): KSoftmax<T> {
     features = x
     return this
+  }
+
+  override fun derivative(): Operand<T> {
+    TODO("Not yet implemented")
   }
 }
 

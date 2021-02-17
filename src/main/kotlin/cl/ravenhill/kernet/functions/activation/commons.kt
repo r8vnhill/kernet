@@ -42,6 +42,8 @@ interface IActivationFunction<T : TType> {
    * This method returns the activation function to provide a fluid interface.
    */
   fun setFeatures(x: Operand<T>): IActivationFunction<T>
+
+  fun derivative(): Operand<T>
 }
 
 abstract class AbstractActivationFunction<T : TType>(protected val tf: Ops) :
