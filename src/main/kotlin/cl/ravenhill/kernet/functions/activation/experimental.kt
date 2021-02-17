@@ -10,10 +10,10 @@
 package cl.ravenhill.kernet.functions.activation
 
 import cl.ravenhill.kernet.math.OperationsContext
-import cl.ravenhill.kernet.math.max
-import cl.ravenhill.kernet.math.times
 import cl.ravenhill.kernet.math.exp
+import cl.ravenhill.kernet.math.max
 import cl.ravenhill.kernet.math.min
+import cl.ravenhill.kernet.math.times
 import org.tensorflow.Operand
 import org.tensorflow.op.Ops
 import org.tensorflow.op.math.Mul
@@ -52,7 +52,7 @@ class KSwish(tf: Ops, var beta: Float = 1F) : AbstractActivationFunction<TFloat3
  * @see [Ops]
  */
 class KCELU(tf: Ops) : AbstractActivationFunction<TFloat32>(tf) {
-  private var alpha = 1F
+  private lateinit var alpha: Operand<TFloat32>
 
   override fun call(): Operand<TFloat32> {
     OperationsContext.setOperatorContext(tf)
@@ -60,21 +60,16 @@ class KCELU(tf: Ops) : AbstractActivationFunction<TFloat32>(tf) {
     return max(zeros, features) + min(zeros, alpha * exp(features / alpha) - tf.onesLike(features))
   }
 
-  override fun invoke(x: Operand<TFloat32>): Mul<TFloat32> {
-    TODO()
-//    return setFeatures(x).call()
-  }
+  override fun invoke(x: Operand<TFloat32>): Operand<TFloat32> = setFeatures(x).call()
 
-  fun invoke(x: Operand<TFloat32>, alpha: Float): Mul<TFloat32> {
-    TODO()
-//    return setFeatures(x).let {
-//      this.alpha = alpha
-//      this
-//    }.call()
-  }
+  fun invoke(x: Operand<TFloat32>, alpha: Float): Operand<TFloat32> = setFeatures(x).let {
+    this.alpha = alpha
+    this
+  }.call()
 
   override fun setFeatures(x: Operand<TFloat32>): KCELU {
     features = x
+    alpha = tf.zerosLike(features)
     return this
   }
 }
