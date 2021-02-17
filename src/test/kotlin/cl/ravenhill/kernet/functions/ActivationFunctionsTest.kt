@@ -1,9 +1,6 @@
 package cl.ravenhill.kernet.functions
 
-import cl.ravenhill.kernet.functions.activation.KReLU
-import cl.ravenhill.kernet.functions.activation.KSigmoid
-import cl.ravenhill.kernet.functions.activation.KSoftmax
-import cl.ravenhill.kernet.functions.activation.KTanh
+import cl.ravenhill.kernet.functions.activation.*
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.RepeatedTest

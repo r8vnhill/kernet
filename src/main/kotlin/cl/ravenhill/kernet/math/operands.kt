@@ -43,6 +43,8 @@ object OperationsContext {
 
 operator fun <T : TType> Operand<T>.plus(x: Operand<T>): Add<T> = math.add(this, x)
 
+operator fun <T : TType> Operand<T>.minus(x: Operand<T>): Sub<T> = math.sub(this, x)
+
 /**
  * Multiplies a float by a  and returns the result wrapped in a ``Mul`` operand.
  * @see [Mul]
