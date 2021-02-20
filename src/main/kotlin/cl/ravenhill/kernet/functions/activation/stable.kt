@@ -7,6 +7,7 @@
  */
 package cl.ravenhill.kernet.functions.activation
 
+import cl.ravenhill.kernet.math.max
 import cl.ravenhill.kernet.math.minus
 import org.tensorflow.Operand
 import org.tensorflow.op.Ops
@@ -56,7 +57,7 @@ class KSigmoid<T : TType>(tf: Ops) : AbstractActivationFunction<T>(tf) {
  * @see [Ops]
  * @see [Relu]
  */
-class KReLU<T : TType>(tf: Ops) : AbstractActivationFunction<T>(tf) {
+class KReLU<T : TNumber>(tf: Ops) : AbstractActivationFunction<T>(tf) {
   override fun call(): Relu<T> = tf.nn.relu(features)
 
   override fun invoke(x: Operand<T>): Relu<T> {
@@ -69,9 +70,7 @@ class KReLU<T : TType>(tf: Ops) : AbstractActivationFunction<T>(tf) {
     return this
   }
 
-  override fun derivative(): Operand<T> {
-    TODO("Not yet implemented")
-  }
+  override fun derivative() = max(tf.math.sign(features), tf.onesLike(features))
 }
 
 /**
@@ -129,7 +128,7 @@ class KSoftmax<T : TNumber>(tf: Ops) : AbstractActivationFunction<T>(tf) {
 // region : activation functions
 fun <T : TType> sigmoid(tf: Ops, features: Operand<T>) = KSigmoid<T>(tf).invoke(features)
 
-fun <T : TType> relu(tf: Ops, features: Operand<T>) = KReLU<T>(tf).invoke(features)
+fun <T : TNumber> relu(tf: Ops, features: Operand<T>) = KReLU<T>(tf).invoke(features)
 
 fun <T : TType> tanh(tf: Ops, features: Operand<T>) = KTanh<T>(tf).invoke(features)
 

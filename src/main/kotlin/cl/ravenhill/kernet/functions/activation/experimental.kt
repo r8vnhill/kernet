@@ -9,8 +9,7 @@
 
 package cl.ravenhill.kernet.functions.activation
 
-import cl.ravenhill.kernet.math.OperatorContext
-import cl.ravenhill.kernet.math.times
+import cl.ravenhill.kernet.math.*
 import org.tensorflow.Operand
 import org.tensorflow.op.Ops
 import org.tensorflow.op.core.Max
@@ -30,7 +29,7 @@ import org.tensorflow.types.TFloat32
 class KSwish(tf: Ops, var beta: Float = 1F) : AbstractActivationFunction<TFloat32>(tf) {
 
   override fun call(): Mul<TFloat32> {
-    OperatorContext.setOperatorContext(tf)
+    OperationsContext.setOperatorContext(tf)
     return features * sigmoid(tf, beta * features)
   }
 
@@ -43,6 +42,10 @@ class KSwish(tf: Ops, var beta: Float = 1F) : AbstractActivationFunction<TFloat3
     features = x
     return this
   }
+
+  override fun derivative(): Operand<TFloat32> {
+    TODO("Not yet implemented")
+  }
 }
 
 /**
@@ -52,34 +55,38 @@ class KSwish(tf: Ops, var beta: Float = 1F) : AbstractActivationFunction<TFloat3
  *    the context for the operations
  * @see [Ops]
  */
-class KCELU(tf: Ops) : AbstractActivationFunction<TFloat32>(tf) {
-  private lateinit var alpha: Operand<TFloat32>
-
-  override fun call(): Operand<TFloat32> {
-    OperationsContext.setOperatorContext(tf)
-    val zeros = tf.zerosLike(features)
-    return max(zeros, features) + min(zeros, alpha * exp(features / alpha) - tf.onesLike(features))
-  }
-
-  override fun invoke(x: Operand<TFloat32>): Operand<TFloat32> = setFeatures(x).call()
-
-  fun invoke(x: Operand<TFloat32>, alpha: Float): Operand<TFloat32> = setFeatures(x).let {
-    this.alpha = alpha
-    this
-  }.call()
-
-  override fun setFeatures(x: Operand<TFloat32>): KCELU {
-    features = x
-    alpha = tf.zerosLike(features)
-    return this
-  }
-}
+//class KCELU(tf: Ops) : AbstractActivationFunction<TFloat32>(tf) {
+//  private lateinit var alpha: Operand<TFloat32>
+//
+//  override fun call(): Operand<TFloat32> {
+//    OperationsContext.setOperatorContext(tf)
+//    val zeros = tf.zerosLike(features)
+//    return max(zeros, features) + min(zeros, alpha * exp(features / alpha) - tf.onesLike(features))
+//  }
+//
+//  override fun invoke(x: Operand<TFloat32>): Operand<TFloat32> = setFeatures(x).call()
+//
+//  fun invoke(x: Operand<TFloat32>, alpha: Float): Operand<TFloat32> = setFeatures(x).let {
+//    this.alpha = alpha
+//    this
+//  }.call()
+//
+//  override fun setFeatures(x: Operand<TFloat32>): KCELU {
+//    features = x
+//    alpha = tf.zerosLike(features)
+//    return this
+//  }
+//
+//  override fun derivative(): Operand<TFloat32> {
+//    TODO("Not yet implemented")
+//  }
+//}
 
 fun swish(tf: Ops, features: Operand<TFloat32>, beta: Float = 1F) =
   KSwish(tf, beta).invoke(features)
 
-fun celu(tf: Ops, features: Operand<TFloat32>, alpha: Float = 1F) =
-  KCELU(tf).invoke(features, alpha)
+//fun celu(tf: Ops, features: Operand<TFloat32>, alpha: Float = 1F) =
+//  KCELU(tf).invoke(features, alpha)
 
 fun main() {
   val tf = Ops.create()

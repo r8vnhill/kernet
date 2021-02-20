@@ -2,6 +2,7 @@
 
 # Version 0.1
 
+- ``0.0.7.0`` ReLU derivative (Technical debt: Testing)
 - ``0.0.6.0`` CELU activation function (Technical debt: Testing)
 - ``0.0.5.0`` Tanh derivative
 - ``0.0.4.0`` Swish activation function (Technical debt: Testing)
