@@ -94,11 +94,26 @@ internal class ActivationFunctionsTest {
 
   @Test
   fun `swish result matches function definition`() {
-    TODO("")
+    val swish = KSwish(tf)
+    swish.beta = rng.nextFloat()
+    checkActivationFunction(swish) { x, it ->
+      val expected = x * sigmoid(tf, swish.beta * x)
+    }
   }
   // endregion
 
   private fun checkActivationFunction(
+    function: IActivationFunction<TFloat32>,
+    lo: Int = 0,
+    hi: Int = 1,
+    assertFor: (Float, FloatNdArray) -> Unit
+  ) {
+    val t = randomTensor(rng)
+    val result = function(t)
+    result.data().scalars().forEachIndexed { index, it -> assertFor(t.data().getFloat(*index), it) }
+  }
+
+  private fun checkActivationDerivative(
     function: IActivationFunction<TFloat32>,
     lo: Int = 0,
     hi: Int = 1,
